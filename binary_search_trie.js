@@ -6,6 +6,7 @@ function Node(value) {
     this.value = value;
     this.left = null;
     this.right = null;
+    this.sideName = "root";
 }
 BinarySearchTrie.prototype = {
     //retrieving the constructor
@@ -28,12 +29,14 @@ BinarySearchTrie.prototype = {
             while(currentNode) {
                 if(number < currentNode.value) {
                     if(!currentNode.left) {
+                        node.sideName = "left";
                         currentNode.left = node;
                     } else {
                         currentNode = currentNode.left;
                     }
                 } else if(number > currentNode.value) {
                     if(!currentNode.right) {
+                        node.sideName = "right";
                         currentNode.right = node;
                     } else {
                         currentNode = currentNode.right;
@@ -50,31 +53,39 @@ BinarySearchTrie.prototype = {
     },
     
     print: function() {
-        console.log(this);
+        this.traverse(function(node, isGroupOpen) {
+          const method = isGroupOpen ? "groupCollapsed" : "groupEnd";
+          console[method](`${node.sideName}: ${node.value}`); 
+        });
     },
     
     isBalanced: function() {
+        let height = 0;
+        this.traverse(function() {
+            height++;
+        });
+        return height;
         
     },
     
-    traverse: function(helpFunc) {
-        
+    traverse: function(fn) {
         function walk(node) {
+            fn(node, true);
             if(node) {
-                helpFunc.call(this, node.value);
                 if(node.left) {
                     walk(node.left);
                 }
+                
                 if(node.right) {
                     walk(node.right);
-                }
+                } 
+                fn(node, false);
             }
         }
-        
         walk(this.root); //start at tree root
     }
 };
 myTrie = new BinarySearchTrie();
-//myTrie.add([22, 4, 8, 23, 42, 15, 36, 12, 11, 50, 30, 21, 22]);
-myTrie.add([10, 5, 12, 3, 4,7,15])
+myTrie.add([22, 4, 8, 23, 42, 15, 36, 12, 11, 50, 30, 21, 22]);
+//myTrie.add([10, 5, 12, 3, 4,7,15])
 myTrie.print();
